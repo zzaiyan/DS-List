@@ -17,15 +17,18 @@ int main() {
     L.pushBack(rand() % 100 + 1);
   }
 
+  cout << "List L: ";
   showList(L);
 
   auto M = L;
 
   L.selSort();
-  cout << "L is sorted\n";
+  cout << "List L is sorted\n";
 
+  cout << "List L: ";
   showList(L);
 
+  cout << "List M: ";
   showList(M);
 
   return 0;

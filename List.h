@@ -37,7 +37,7 @@ public:
   T &operator[](int r);
   // 复制节点(用于拷贝构造or赋值)
   void copyNodes(ListNode<T> *p, int n);
-  // 删除节点
+  // 删除节点 返回其值
   const T &remove(ListNode<T> *p);
   // 清空内容
   int clear();
