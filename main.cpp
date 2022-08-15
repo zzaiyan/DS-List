@@ -2,41 +2,59 @@
 #include <iostream>
 using namespace std;
 
+int getRank(List<int> &L, ListNode<int> *p) {
+  int n = 0;
+  while (p != L.begin()) {
+    p = p->pred;
+    n++;
+  }
+  return n;
+}
+
+ListNode<int> *getNode(List<int> &L, int n) {
+  auto p = L.begin();
+  while (n--)
+    p = p->succ;
+  return p;
+}
+
 int main() {
   List<int> L;
   int n;
   cin >> n;
   for (int i = 0; i < n; i++) {
-    int x;
-    cin >> x;
-    L.pushBack(x);
-    cout << "size = " << L.size() << endl;
+    L.pushBack(rand() % 100 + 1);
   }
+  // while (n--) {
+  //   // string in;
+  //   // cin >> in;
+  //   int x, y;
+  //   cin >> x >> y;
+  //   L.insertAfter(L.begin()->pred, x);
+  //   L.insertBefore(L.end(), y);
+  //   for (auto i = L.first(); i != L.end(); i = i->succ)
+  //     cout << i->date << ' ';
+  //   cout << endl;
+  // }
 
   for (auto i = L.first(); i != L.end(); i = i->succ)
     cout << i->date << ' ';
 
   cout << endl;
 
-  // L[1] = 12345;
+  for (int i = 1; i <= n; i++) {
+    auto e = L.selMax(L.begin(), i);
+    cout << e->date << " ";
+  }
+  cout << endl;
 
-  // int m;
-  // cin >> m;
-  // while (m--) {
-  //   int x;
-  //   cin >> x;
-  //   auto p = L.begin();
-  //   while (x--)
-  //     p = p->succ;
-  //   auto temp = L.remove(p);
-  //   cout << "É¾³ýÁË " << temp << endl;
-  //   for (auto i = L.first(); i != L.end(); i = i->succ)
-  //     cout << i->date << ' ';
-  // }
+  for (auto i = L.first(); i != L.end(); i = i->succ)
+    cout << i->date << ' ';
 
-  auto rmNum = L.uniquify();
+  L.selSort(L.begin(), L.size());
 
-  cout << "\nremove " << rmNum << " eles\n";
+  // cout << "\nremove " << rmNum << " eles\n";
+  cout << endl;
 
   for (auto i = L.first(); i != L.end(); i = i->succ)
     cout << i->date << ' ';

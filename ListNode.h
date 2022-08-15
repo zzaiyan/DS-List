@@ -6,7 +6,7 @@ template <typename T> struct ListNode {
   ListNode<T> *pred, *succ;
 
   ListNode() {}
-  ~ListNode() { std::cout << "ListNode Distruction Called\n"; }
+  //~ListNode() { std::cout << "ListNode Distruction Called\n"; }
   ListNode(const T &e, ListNode<T> *p = nullptr, ListNode<T> *s = nullptr)
       : date(e), pred(p), succ(s) {}
   ListNode<T> *insertAsPred(const T &e);

@@ -45,6 +45,7 @@ public:
   int uniquify();
   // 排序 (始于p的n个连续元素)
   void selSort(ListNode<T> *p, int n);
+  ListNode<T> *selMax(ListNode<T> *p, int n);
 };
 
 template <typename T> List<T>::~List() {
@@ -160,6 +161,25 @@ template <typename T> int List<T>::uniquify() {
   return oldSize - _size;
 }
 
-template <typename T> void selSort(ListNode<T> *p, int n) {
+template <typename T> void List<T>::selSort(ListNode<T> *p, int n) {
   ListNode<T> *head = p->pred, *tail = p;
+  for (int i = 0; i < n; i++)
+    tail = tail->succ;
+  for (; n > 1; n--) {
+    auto e = std::move(remove(selMax(head->succ, n)));
+    // std::cout << "\nremove " << e;
+    insertBefore(tail, e);
+    tail = tail->pred;
+  }
+}
+
+template <typename T> ListNode<T> *List<T>::selMax(ListNode<T> *p, int n) {
+  ListNode<T> *m = p;
+  while (--n) {
+    p = p->succ;
+    // 若大于等于 则更新 m
+    if (!(p->date < m->date))
+      m = p;
+  }
+  return m;
 }
