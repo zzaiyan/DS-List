@@ -3,22 +3,24 @@
 
 template <typename T> class List {
   int _size;
-  ListNode<T> *header;
-  ListNode<T> *trailer;
+  ListNode<T> *header, *trailer;
 
 protected:
   void _init();
 
 public:
   List() { _init(); }
-  // List(NodeList<T>*p,int n);
+  List(ListNode<T> *p, int n);
+  List(const List<T> &L);
   ~List();
-  //  返回首末节点
+  // 重载赋值
+  List<T> &operator=(const List<T> &L);
+  // 返回首末节点
   ListNode<T> *first() const { return header->succ; }
   ListNode<T> *last() const { return trailer->pred; }
   ListNode<T> *begin() const { return header->succ; }
   ListNode<T> *end() const { return trailer; }
-  //
+  // 返回元素个数
   int size() { return _size; }
   // 返回p的n个真前驱中值为e的节点
   ListNode<T> *find(const T &e, int n, ListNode<T> *p);
@@ -33,7 +35,7 @@ public:
   ListNode<T> *pushBack(const T &e);
   // 循秩访问
   T &operator[](int r);
-  // 复制节点
+  // 复制节点(用于拷贝构造or赋值)
   void copyNodes(ListNode<T> *p, int n);
   // 删除节点
   const T &remove(ListNode<T> *p);
@@ -45,8 +47,21 @@ public:
   int uniquify();
   // 排序 (始于p的n个连续元素)
   void selSort(ListNode<T> *p, int n);
+  void selSort();
+  // 搜索最大值
   ListNode<T> *selMax(ListNode<T> *p, int n);
+  ListNode<T> *selMax();
 };
+
+template <typename T> List<T>::List(ListNode<T> *p, int n) {
+  _init();
+  copyNodes(p, n);
+}
+
+template <typename T> List<T>::List(const List<T> &L) {
+  _init();
+  copyNodes(L.header->succ, L._size);
+}
 
 template <typename T> List<T>::~List() {
   clear();
@@ -54,11 +69,13 @@ template <typename T> List<T>::~List() {
   delete trailer;
 }
 
+template <typename T> List<T> &List<T>::operator=(const List<T> &L) {
+  clear();
+  copyNodes(L.header->succ, L._size);
+  return *this;
+}
+
 template <typename T> void List<T>::_init() {
-  // if (header)
-  //   delete header;
-  // if (trailer)
-  //   delete trailer;
   header = new ListNode<T>();
   trailer = new ListNode<T>();
   header->succ = trailer;
@@ -74,7 +91,6 @@ template <typename T> T &List<T>::operator[](int r) {
 }
 
 template <typename T> void List<T>::copyNodes(ListNode<T> *p, int n) {
-  _init();
   while (n--) {
     pushBack(p->date);
     p = p->succ;
@@ -166,9 +182,7 @@ template <typename T> void List<T>::selSort(ListNode<T> *p, int n) {
   for (int i = 0; i < n; i++)
     tail = tail->succ;
   for (; n > 1; n--) {
-    auto e = std::move(remove(selMax(head->succ, n)));
-    // std::cout << "\nremove " << e;
-    insertBefore(tail, e);
+    insertBefore(tail, remove(selMax(head->succ, n)));
     tail = tail->pred;
   }
 }
@@ -182,4 +196,10 @@ template <typename T> ListNode<T> *List<T>::selMax(ListNode<T> *p, int n) {
       m = p;
   }
   return m;
+}
+
+template <typename T> void List<T>::selSort() { selSort(header->succ, _size); }
+
+template <typename T> ListNode<T> *List<T>::selMax() {
+  return selMax(header->succ, _size);
 }
