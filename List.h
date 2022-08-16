@@ -22,16 +22,21 @@ public:
   ListNode<T> *end() const { return trailer; }
   // 返回元素个数
   int size() { return _size; }
-  // 返回p的n个真前驱中值为e的节点
+  // 返回p的n个真前驱中最后一个值为e的节点
   ListNode<T> *find(const T &e, int n, ListNode<T> *p);
-  // 返回p的n个真后继中值为e的节点
+  // 返回p的n个真后继中最后一个值为e的节点
   ListNode<T> *find(const T &e, ListNode<T> *p, int n);
+  // 返回p的n个真前驱中最后一个不大于e的节点
+  ListNode<T> *search(const T &e, int n, ListNode<T> *p);
+  // 返回p的n个真后继中最后一个不大于e的节点
+  ListNode<T> *search(const T &e, ListNode<T> *p, int n);
   // 前插
   ListNode<T> *insertBefore(ListNode<T> *p, const T &e);
   // 后插
   ListNode<T> *insertAfter(ListNode<T> *p, const T &e);
   // 首尾
   ListNode<T> *pushFront(const T &e);
+  // 尾插
   ListNode<T> *pushBack(const T &e);
   // 循秩访问
   T &operator[](int r);
@@ -48,6 +53,8 @@ public:
   // 排序 (始于p的n个连续元素)
   void selSort(ListNode<T> *p, int n);
   void selSort();
+  void insSort(ListNode<T> *p, int n);
+  void insSort();
   // 搜索最大值
   ListNode<T> *selMax(ListNode<T> *p, int n);
   ListNode<T> *selMax();
@@ -87,12 +94,12 @@ template <typename T> T &List<T>::operator[](int r) {
   ListNode<T> *p = first();
   while (r-- > 0)
     p = p->succ;
-  return p->date;
+  return p->data;
 }
 
 template <typename T> void List<T>::copyNodes(ListNode<T> *p, int n) {
   while (n--) {
-    pushBack(p->date);
+    pushBack(p->data);
     p = p->succ;
   }
 }
@@ -101,7 +108,7 @@ template <typename T>
 ListNode<T> *List<T>::find(const T &e, int n, ListNode<T> *p) {
   while (n-- > 0) {
     p = p->pred;
-    if (e == p->date)
+    if (e == p->data)
       return p;
   }
   return nullptr;
@@ -111,10 +118,30 @@ template <typename T>
 ListNode<T> *List<T>::find(const T &e, ListNode<T> *p, int n) {
   while (n-- > 0) {
     p = p->succ;
-    if (e == p->date)
+    if (e == p->data)
       return p;
   }
   return nullptr;
+}
+
+template <typename T>
+ListNode<T> *List<T>::search(const T &e, int n, ListNode<T> *p) {
+  do {
+    p = p->pred, n--;
+  }                                  //从右向左
+  while ((-1 < n) && (e < p->data)); //逐个比较，直至命中或越界
+  return p;
+}
+
+template <typename T>
+ListNode<T> *List<T>::search(const T &e, ListNode<T> *p, int n) {
+  for (int i = 0; i < n; i++)
+    p = p->succ;
+  do {
+    p = p->pred, n--;
+  }                                  //从右向左
+  while ((-1 < n) && (e < p->data)); //逐个比较，直至命中或越界
+  return p;
 }
 
 template <typename T>
@@ -156,7 +183,7 @@ template <typename T> int List<T>::deduplicate() {
   auto p = first();
   while (p->succ != trailer) {
     p = p->succ;
-    auto q = find(p->date, r, p);
+    auto q = find(p->data, r, p);
     q ? remove(q) : r++;
   }
   return oldSize - _size;
@@ -169,20 +196,36 @@ template <typename T> int List<T>::uniquify() {
   ListNode<T> *p = first(), *q;
   while (p->succ != trailer) {
     q = p->succ;
-    if (q->date != p->date)
-      p = q; // 若相异 则进入下一阶段
+    if (q->data != p->data)
+      p = q; // if diff, continue
     else
-      remove(q); // 若相同 则移除q节点
+      remove(q); // if same, remove(q)
   }
   return oldSize - _size;
 }
 
 template <typename T> void List<T>::selSort(ListNode<T> *p, int n) {
+  if (n < 2) // skip the plain cases
+    return;
   ListNode<T> *head = p->pred, *tail = p;
   for (int i = 0; i < n; i++)
     tail = tail->succ;
   for (; n > 1; n--) {
-    insertBefore(tail, remove(selMax(head->succ, n)));
+    // Type 1:
+    // delete and rebuild the Nodes
+    // insertBefore(tail, remove(selMax(head->succ, n)));
+
+    // Type 2:
+    // swap the two's value
+    // auto m = selMax(head->succ, n);
+    // T temp = tail->pred->data;
+    // tail->pred->data = m->data;
+    // m->data = temp;
+
+    // Type 3:  Optimal Sln
+    // swap the Nodes via reconnect their lines
+    ListNode<T>::posSwap(tail->pred, selMax(head->succ, n));
+
     tail = tail->pred;
   }
 }
@@ -191,8 +234,8 @@ template <typename T> ListNode<T> *List<T>::selMax(ListNode<T> *p, int n) {
   ListNode<T> *m = p;
   while (--n) {
     p = p->succ;
-    // 若大于等于 则更新 m
-    if (!(p->date < m->date))
+    // once Greater or Equal, update m.
+    if (!(p->data < m->data))
       m = p;
   }
   return m;
@@ -203,3 +246,20 @@ template <typename T> void List<T>::selSort() { selSort(header->succ, _size); }
 template <typename T> ListNode<T> *List<T>::selMax() {
   return selMax(header->succ, _size);
 }
+
+template <typename T> void List<T>::insSort(ListNode<T> *p, int n) {
+  if (n < 2) // skip the plain cases
+    return;
+  for (int r = 0; r < n; r++) {
+    // Just reconnect the lines to move the Node,
+    // which is most Efficient.
+    ListNode<T> *pos = search(p->data, r, p);
+    auto now = p;
+    p = p->succ;
+    now->pred->succ = now->succ, now->succ->pred = now->pred; // short now
+    now->pred = pos, now->succ = pos->succ;       // insert now as pos's succ
+    now->pred->succ = now, now->succ->pred = now; // too
+  }
+}
+
+template <typename T> void List<T>::insSort() { insSort(header->succ, _size); }

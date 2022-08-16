@@ -2,16 +2,17 @@
 #include <iostream>
 
 template <typename T> struct ListNode {
-  T date;
+  T data;
   ListNode<T> *pred, *succ;
 
   ListNode() {}
   //~ListNode() { std::cout << "ListNode Distruction Called\n"; }
   ListNode(const T &e, ListNode<T> *p = nullptr, ListNode<T> *s = nullptr)
-      : date(e), pred(p), succ(s) {}
+      : data(e), pred(p), succ(s) {}
   ListNode<T> *insertAsPred(const T &e);
   ListNode<T> *insertAsSucc(const T &e);
   static const T &remove(ListNode<T> *p);
+  static void posSwap(ListNode<T> *p1, ListNode<T> *p2);
 };
 
 template <typename T> ListNode<T> *ListNode<T>::insertAsPred(const T &e) {
@@ -29,7 +30,22 @@ template <typename T> ListNode<T> *ListNode<T>::insertAsSucc(const T &e) {
 template <typename T> const T &ListNode<T>::remove(ListNode<T> *p) {
   p->pred->succ = p->succ;
   p->succ->pred = p->pred;
-  T temp = p->date;
+  T temp = p->data;
   delete p;
   return temp;
+}
+
+template <typename T>
+void ListNode<T>::posSwap(ListNode<T> *p1, ListNode<T> *p2) {
+  bool isNear = p1->succ == p2;
+  ListNode<T> *oldSucc = p1->succ;
+  p1->pred->succ = p1->succ, p1->succ->pred = p1->pred; // short p1
+  p1->pred = p2, p1->succ = p2->succ;       // insert p1 as p2's succ
+  p1->pred->succ = p1, p1->succ->pred = p1; // too
+
+  if (!isNear) {
+    p2->pred->succ = p2->succ, p2->succ->pred = p2->pred; // short p2
+    p2->succ = oldSucc, p2->pred = oldSucc->pred;         // insert p2 to oldP1
+    p2->pred->succ = p2, p2->succ->pred = p2;             // too
+  }
 }
