@@ -15,16 +15,17 @@ int main() {
   cin >> n;
 
   for (int i = 0; i < n; i++) {
-    L.pushBack(rand() % 100 + 1);
+    L.pushBack(rand() % (2 * n) + 1);
   }
 
-  auto M = L;
+  List<int> M;
+  M = L;
 
   cout << "\nList L: ";
   showList(L);
 
   L.selSort();
-  cout << "\nL.selSorted()\n\n";
+  cout << "\nL.selSorted() calls.\n\n";
 
   cout << "List L: ";
   showList(L);
@@ -33,7 +34,7 @@ int main() {
   showList(M);
 
   M.insSort();
-  cout << "\nM.insSorted()\n\n";
+  cout << "\nM.insSorted() calls.\n\n";
 
   cout << "List M: ";
   showList(M);

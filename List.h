@@ -83,8 +83,8 @@ template <typename T> List<T> &List<T>::operator=(const List<T> &L) {
 }
 
 template <typename T> void List<T>::_init() {
-  header = new ListNode<T>();
-  trailer = new ListNode<T>();
+  header = new ListNode<T>;
+  trailer = new ListNode<T>;
   header->succ = trailer;
   trailer->pred = header;
   _size = 0;
@@ -128,8 +128,8 @@ template <typename T>
 ListNode<T> *List<T>::search(const T &e, int n, ListNode<T> *p) {
   do {
     p = p->pred, n--;
-  }                                  //从右向左
-  while ((-1 < n) && (e < p->data)); //逐个比较，直至命中或越界
+  }                                  // R -> L
+  while ((-1 < n) && (e < p->data)); // compare until Hit or Range-out
   return p;
 }
 
@@ -137,11 +137,7 @@ template <typename T>
 ListNode<T> *List<T>::search(const T &e, ListNode<T> *p, int n) {
   for (int i = 0; i < n; i++)
     p = p->succ;
-  do {
-    p = p->pred, n--;
-  }                                  //从右向左
-  while ((-1 < n) && (e < p->data)); //逐个比较，直至命中或越界
-  return p;
+  return search(e, n, p);
 }
 
 template <typename T>
@@ -213,10 +209,12 @@ template <typename T> void List<T>::selSort(ListNode<T> *p, int n) {
   for (; n > 1; n--) {
     // Type 1:
     // delete and rebuild the Nodes
+    //
     // insertBefore(tail, remove(selMax(head->succ, n)));
 
     // Type 2:
     // swap the two's value
+    //
     // auto m = selMax(head->succ, n);
     // T temp = tail->pred->data;
     // tail->pred->data = m->data;
@@ -224,6 +222,7 @@ template <typename T> void List<T>::selSort(ListNode<T> *p, int n) {
 
     // Type 3:  Optimal Sln
     // swap the Nodes via reconnect their lines
+    //
     ListNode<T>::posSwap(tail->pred, selMax(head->succ, n));
 
     tail = tail->pred;

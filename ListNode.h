@@ -5,10 +5,10 @@ template <typename T> struct ListNode {
   T data;
   ListNode<T> *pred, *succ;
 
-  ListNode() {}
-  //~ListNode() { std::cout << "ListNode Distruction Called\n"; }
+  ListNode() : pred(nullptr), succ(nullptr) { data = std::move(T{}); }
   ListNode(const T &e, ListNode<T> *p = nullptr, ListNode<T> *s = nullptr)
       : data(e), pred(p), succ(s) {}
+  // ~ListNode() { std::cout << "ListNode Distruction Called\n"; }
   ListNode<T> *insertAsPred(const T &e);
   ListNode<T> *insertAsSucc(const T &e);
   static const T &remove(ListNode<T> *p);
