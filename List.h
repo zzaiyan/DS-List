@@ -38,6 +38,10 @@ public:
   ListNode<T> *pushFront(const T &e);
   // 尾插
   ListNode<T> *pushBack(const T &e);
+  // 首删
+  T &popFront() { return remove(0); }
+  // 末删
+  T &popBack() { return remove(_size - 1); }
   // 循秩访问
   T &operator[](int r);
   // 复制节点(用于拷贝构造or赋值)
@@ -162,7 +166,7 @@ template <typename T> ListNode<T> *List<T>::pushBack(const T &e) {
 
 template <typename T> const T &List<T>::remove(ListNode<T> *p) {
   _size--;
-  return ListNode<T>::remove(p);
+  return std::move(ListNode<T>::remove(p));
 }
 
 template <typename T> int List<T>::clear() {
